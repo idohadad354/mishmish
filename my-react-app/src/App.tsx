@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+import nikiImage from './assets/niki.webp'
 import './App.css'
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
   return (
     <>
       <div>
+        <img src={nikiImage} alt="Niki" />
       </div>
       <h1>Vite + React</h1>
       <div className="card">
