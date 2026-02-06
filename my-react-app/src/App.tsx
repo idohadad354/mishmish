@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+import nikiImage from './assets/niki.webp'
 import './App.css'
-
-// we are all gonna hitler make it brah
 
 function App() {
   const [count, setCount] = useState(0)
@@ -11,6 +10,7 @@ function App() {
   return (
     <>
       <div>
+        <img src={nikiImage} alt="Niki" />
       </div>
       <h1>Vite + React</h1>
       <div className="card">
