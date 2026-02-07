@@ -1,30 +1,30 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import nikiImage from './assets/niki.webp'
+import NikiProfile from './NikiProfile'
+import OtherProfile from './OtherProfile' // 1. Import your new second component
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  // Use state to track which "page" we are on
+  const [view, setView] = useState('niki');
 
   return (
-    <>
-      <div>
-        <img src={nikiImage} alt="Niki" />
+    <div className="app-container">
+      <nav>
+        <button onClick={() => setView('niki')}>Show Niki</button>
+        <button onClick={() => setView('other')}>Show Other</button>
+      </nav>
+
+      <hr />
+
+      <div className="content-area">
+        {/* Conditional Rendering: If view is 'niki', show NikiProfile, else show OtherProfile */}
+        {view === 'niki' ? (
+          <NikiProfile />
+        ) : (
+          <OtherProfile />
+        )}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </div>
   )
 }
 
