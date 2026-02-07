@@ -1,0 +1,288 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Space+Grotesk:wght@400;500;600&display=swap');
+
+.niki-profile {
+  --ink: #1d1b1a;
+  --muted: #4a4542;
+  --paper: #f7f2ec;
+  --accent: #d8694b;
+  --accent-dark: #b14a32;
+  --shadow: 0 24px 60px rgba(20, 16, 13, 0.18);
+
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background: radial-gradient(circle at 10% 20%, #ffe7d8 0%, #f7f2ec 45%, #efe6dd 100%);
+  color: var(--ink);
+  max-width: 920px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.niki-profile::before {
+  content: '';
+  position: absolute;
+  inset: -40% -30% auto auto;
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle, rgba(216, 105, 75, 0.35), transparent 65%);
+  filter: blur(2px);
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.niki-profile::after {
+  content: '';
+  position: absolute;
+  inset: auto auto -45% -25%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(46, 96, 98, 0.25), transparent 70%);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.niki-card {
+  position: relative;
+  z-index: 1;
+  border-radius: 24px;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  display: grid;
+  gap: 2rem;
+  animation: float-in 0.8s ease forwards;
+}
+
+.niki-header {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: minmax(0, 120px) minmax(0, 1fr);
+  align-items: center;
+  animation: fade-up 0.7s ease 0.05s both;
+}
+
+.niki-avatar-wrap {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.niki-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 24px;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 18px 30px rgba(30, 20, 16, 0.2);
+}
+
+.niki-status {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  padding: 0.3rem 0.6rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: #2e6062;
+  color: #f6f2ed;
+  border-radius: 999px;
+  border: 2px solid #f7f2ec;
+}
+
+.niki-title h1 {
+  margin: 0.3rem 0;
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 4vw, 3rem);
+  letter-spacing: -0.02em;
+}
+
+.niki-eyebrow {
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+}
+
+.niki-subtitle {
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1rem;
+  color: var(--muted);
+  max-width: 44ch;
+}
+
+.niki-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  animation: fade-up 0.7s ease 0.15s both;
+}
+
+.niki-chip {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.85rem;
+  color: var(--muted);
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(216, 105, 75, 0.25);
+}
+
+.niki-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1.5rem;
+  padding: 1.2rem 1.4rem;
+  border-radius: 18px;
+  background: rgba(29, 27, 26, 0.04);
+  animation: fade-up 0.7s ease 0.25s both;
+}
+
+.niki-stat-number {
+  font-family: 'Fraunces', serif;
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.niki-stat-label {
+  margin: 0.15rem 0 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+
+.niki-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  animation: fade-up 0.7s ease 0.35s both;
+}
+
+.niki-btn {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.75rem 1.6rem;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.niki-btn-primary {
+  background: var(--accent);
+  color: #fff7f2;
+  box-shadow: 0 12px 24px rgba(216, 105, 75, 0.3);
+}
+
+.niki-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px rgba(216, 105, 75, 0.4);
+  background: var(--accent-dark);
+}
+
+.niki-profile-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 180px) minmax(0, 1fr);
+  gap: 1.5rem;
+  padding: 1.4rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(29, 27, 26, 0.08);
+  box-shadow: 0 18px 35px rgba(20, 16, 13, 0.12);
+  animation: fade-up 0.6s ease both;
+}
+
+.niki-profile-image img {
+  width: 100%;
+  height: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 18px;
+}
+
+.niki-profile-copy h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.niki-profile-copy p {
+  font-family: 'Space Grotesk', sans-serif;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+.niki-profile-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.niki-profile-tags span {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid rgba(216, 105, 75, 0.25);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.niki-btn-ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: rgba(29, 27, 26, 0.2);
+}
+
+.niki-btn-ghost:hover {
+  transform: translateY(-2px);
+  border-color: rgba(29, 27, 26, 0.5);
+}
+
+@keyframes float-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 720px) {
+  .niki-header {
+    grid-template-columns: 1fr;
+    text-align: left;
+  }
+
+  .niki-avatar-wrap {
+    width: 96px;
+    height: 96px;
+  }
+
+  .niki-profile-panel {
+    grid-template-columns: 1fr;
+  }
+}
