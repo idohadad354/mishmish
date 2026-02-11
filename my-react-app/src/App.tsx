@@ -3,7 +3,7 @@ import { io, type Socket } from 'socket.io-client'
 import './App.css'
 
 type Slot = 'p1' | 'p2'
-type AttackType = 'none' | 'punch' | 'kick'
+type AttackType = 'none' | 'punch' | 'kick' | 'pee'
 type MatchPhase = 'waiting' | 'countdown' | 'active' | 'postmatch'
 
 type RuntimeFighter = {
@@ -59,6 +59,7 @@ const KICK_RANGE = 180
 const ATTACK_CONFIG = {
   punch: { damage: 10, cooldown: 300, duration: 160, range: PUNCH_RANGE },
   kick: { damage: 15, cooldown: 460, duration: 220, range: KICK_RANGE },
+  pee: { damage: 8, cooldown: 1200, duration: 700, range: 220 },
 }
 
 const initialFighter = (x: number): RuntimeFighter => ({
@@ -158,9 +159,13 @@ function App() {
 
   const controlsRef = useRef<Controls>({ left: false, right: false, up: false })
   const socketRef = useRef<Socket | null>(null)
+  const remoteStateRef = useRef<Record<Slot, { x: number; y: number; ts: number } | null>>({ p1: null, p2: null })
   const lastFrameRef = useRef<number | null>(null)
   const lastStateEmitRef = useRef(0)
   const seenHitRef = useRef<Set<string>>(new Set())
+  const confettiRef = useRef<HTMLCanvasElement | null>(null)
+  const confettiAnimRef = useRef<number | null>(null)
+  const confettiParticlesRef = useRef<any[]>([])
   const countdownTimerRef = useRef<number | null>(null)
   const winnerReportedRef = useRef(false)
   const leavingRoomRef = useRef(false)
@@ -367,12 +372,11 @@ function App() {
         slot: Slot
         state: Pick<RuntimeFighter, 'x' | 'y' | 'health' | 'attack' | 'attackUntil' | 'isJumping'>
       }) => {
+        // Update non-positional state immediately; buffer positional data for interpolation
         setFighters((prev) => {
           const next = { ...prev }
           next[payload.slot] = {
             ...next[payload.slot],
-            x: payload.state.x,
-            y: payload.state.y,
             health: payload.state.health,
             attack: payload.state.attack,
             attackUntil: payload.state.attackUntil,
@@ -380,6 +384,12 @@ function App() {
           }
           return next
         })
+
+        remoteStateRef.current[payload.slot] = {
+          x: payload.state.x,
+          y: payload.state.y,
+          ts: performance.now(),
+        }
       },
     )
 
@@ -527,7 +537,7 @@ function App() {
   )
 
   const triggerAttack = useCallback(
-    (type: 'punch' | 'kick') => {
+    (type: 'punch' | 'kick' | 'pee') => {
       if (!session || !slot || !otherSlot || !battleActive) {
         return
       }
@@ -632,6 +642,9 @@ function App() {
       if (key === 'd') {
         triggerAttack('kick')
       }
+      if (key === 'w') {
+        triggerAttack('pee')
+      }
     }
 
     const onKeyUp = (event: KeyboardEvent) => {
@@ -654,6 +667,94 @@ function App() {
       window.removeEventListener('keyup', onKeyUp)
     }
   }, [battleActive, session, triggerAttack, triggerJump])
+
+  // Confetti canvas setup: resize to device pixel ratio
+  useEffect(() => {
+    const canvas = confettiRef.current
+    if (!canvas) return
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect()
+      canvas.width = Math.round(rect.width * devicePixelRatio)
+      canvas.height = Math.round(rect.height * devicePixelRatio)
+      const ctx = canvas.getContext('2d')
+      if (ctx) ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0)
+    }
+
+    resize()
+    window.addEventListener('resize', resize)
+    return () => window.removeEventListener('resize', resize)
+  }, [])
+
+  // Trigger confetti when a winner is set
+  useEffect(() => {
+    if (!winner) return
+    const canvas = confettiRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const W = canvas.clientWidth
+    const H = canvas.clientHeight
+    const colors = ['#ffe066', '#ff6b6b', '#6bcBff', '#c77dff', '#ff9f43', '#69f0ae']
+    const particles: any[] = []
+    for (let i = 0; i < 140; i++) {
+      particles.push({
+        x: Math.random() * W,
+        y: -10 - Math.random() * 120,
+        vx: (Math.random() - 0.5) * 8,
+        vy: Math.random() * 6 + 2,
+        size: Math.random() * 10 + 6,
+        rot: Math.random() * Math.PI * 2,
+        vr: (Math.random() - 0.5) * 0.25,
+        color: colors[(Math.random() * colors.length) | 0],
+      })
+    }
+
+    confettiParticlesRef.current = particles
+
+    let last = performance.now()
+    const tick = (ts: number) => {
+      const dt = Math.min(0.033, (ts - last) / 1000)
+      last = ts
+      ctx.clearRect(0, 0, canvas.width / devicePixelRatio, canvas.height / devicePixelRatio)
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i]
+        p.vy += 9.8 * dt
+        p.x += p.vx
+        p.y += p.vy
+        p.rot += p.vr
+        ctx.save()
+        ctx.translate(p.x, p.y)
+        ctx.rotate(p.rot)
+        ctx.fillStyle = p.color
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6)
+        ctx.restore()
+        if (p.y > H + 60) particles.splice(i, 1)
+      }
+      if (particles.length > 0) {
+        confettiAnimRef.current = requestAnimationFrame(tick)
+      } else {
+        confettiAnimRef.current = null
+      }
+    }
+
+    if (confettiAnimRef.current) cancelAnimationFrame(confettiAnimRef.current)
+    confettiAnimRef.current = requestAnimationFrame(tick)
+
+    const stopAfter = setTimeout(() => {
+      if (confettiAnimRef.current) cancelAnimationFrame(confettiAnimRef.current)
+      confettiAnimRef.current = null
+      confettiParticlesRef.current = []
+      ctx.clearRect(0, 0, canvas.width / devicePixelRatio, canvas.height / devicePixelRatio)
+    }, 4800)
+
+    return () => {
+      clearTimeout(stopAfter)
+      if (confettiAnimRef.current) cancelAnimationFrame(confettiAnimRef.current)
+      confettiAnimRef.current = null
+    }
+  }, [winner])
 
   useEffect(() => {
     if (!session || !slot || !otherSlot) {
@@ -710,7 +811,15 @@ function App() {
           }
 
           integrateJump(localFighter)
+
+          // Smooth remote player movement by interpolating towards the latest server-sent position
+          const remoteTarget = remoteStateRef.current[otherSlot]
           integrateJump(remoteFighter)
+          if (remoteTarget) {
+            const interp = Math.min(1, dt * 10)
+            remoteFighter.x += (remoteTarget.x - remoteFighter.x) * interp
+            remoteFighter.y += (remoteTarget.y - remoteFighter.y) * interp
+          }
 
           if (now - lastStateEmitRef.current > 25) {
             emitState({
@@ -937,7 +1046,7 @@ function App() {
               <p>1. Create an invite and share the link or room code.</p>
               <p>2. Move with Arrow Left and Arrow Right.</p>
               <p>3. Wait for both players to click Ready, then watch the 3, 2, 1 countdown.</p>
-              <p>4. Punch with A and front-kick with D.</p>
+              <p>4. Punch with A, front-kick with D, and use your super with W (Pee).</p>
               <p>5. Beat your opponent health bar, then choose rematch or leave.</p>
             </div>
           )}
@@ -1043,12 +1152,20 @@ function App() {
               <span className="fighterName">{players.find((p) => p.slot === 'p1')?.name || 'P1'}</span>
               <div className="sprite">
                 <div className="head" />
+                <div className="hair" />
+                <div className="hair-flare" />
+                <div className="eye eye-left" />
+                <div className="eye eye-right" />
+                <div className="mouth" />
                 <div className="torso" />
                 <div className={p1TrailArmClass} />
                 <div className={p1LeadArmClass} />
                 <div className={p1TrailLegClass} />
                 <div className={p1LeadLegClass} />
               </div>
+              {fighters.p1.attack === 'pee' && (
+                <div className={`pee-stream ${p1FacingRight ? 'right' : 'left'}`} />
+              )}
             </div>
 
             <div
@@ -1058,15 +1175,25 @@ function App() {
               <span className="fighterName">{players.find((p) => p.slot === 'p2')?.name || 'Waiting for second player'}</span>
               <div className="sprite">
                 <div className="head" />
+                <div className="hair" />
+                <div className="hair-flare" />
+                <div className="eye eye-left" />
+                <div className="eye eye-right" />
+                <div className="mouth" />
                 <div className="torso" />
                 <div className={p2TrailArmClass} />
                 <div className={p2LeadArmClass} />
                 <div className={p2TrailLegClass} />
                 <div className={p2LeadLegClass} />
               </div>
+                {fighters.p2.attack === 'pee' && (
+                  <div className={`pee-stream ${p2FacingRight ? 'right' : 'left'}`} />
+                )}
             </div>
 
             <div className="ground" />
+            <div className="neon-skyline" />
+            <canvas className="confetti-canvas" ref={confettiRef} />
 
             {phase === 'countdown' && countdownValue > 0 && (
               <div className="countdownOverlay">{countdownValue}</div>

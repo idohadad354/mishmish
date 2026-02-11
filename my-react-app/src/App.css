@@ -2,6 +2,8 @@
   width: min(1120px, 95vw);
   margin: 0 auto;
   padding: 18px 0 30px;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color: #e6eefc;
 }
 
 .topbar {
@@ -13,7 +15,12 @@
 
 .topbar h1 {
   margin: 0;
-  font-size: clamp(1.3rem, 2vw, 2rem);
+  font-size: clamp(1.3rem, 2.4vw, 2.4rem);
+  font-family: Orbitron, Inter, sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 6px 18px rgba(80,160,255,0.08), 0 0 18px rgba(48,180,255,0.12), 0 0 30px rgba(48,180,255,0.06);
 }
 
 .status {
@@ -32,12 +39,12 @@
 }
 
 .panel {
-  border: 1px solid #ffffff29;
-  border-radius: 16px;
-  background: #232831c7;
+  border: 1px solid #ffffff22;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(10,14,20,0.72), rgba(20,28,36,0.6));
   padding: 14px;
   margin-bottom: 14px;
-  box-shadow: 0 16px 45px #00000044;
+  box-shadow: 0 18px 60px rgba(4,8,16,0.75), inset 0 1px 0 rgba(255,255,255,0.02);
 }
 
 .guide {
@@ -86,13 +93,16 @@ input {
 
 button {
   cursor: pointer;
-  background: linear-gradient(120deg, #d96136, #a52f15);
+  background: linear-gradient(90deg, rgba(255,120,90,0.98), rgba(200,40,60,0.98));
   border: none;
   font-weight: 700;
+  box-shadow: 0 6px 22px rgba(200,40,60,0.18), 0 0 10px rgba(255,120,90,0.06);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 button:hover {
-  filter: brightness(1.08);
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 10px 30px rgba(200,40,60,0.26), 0 0 18px rgba(255,120,90,0.12);
 }
 
 .roomHeader {
@@ -152,13 +162,67 @@ button:hover {
 
 .arena {
   position: relative;
-  height: clamp(300px, 54vw, 500px);
+  height: clamp(320px, 58vw, 540px);
   border-radius: 14px;
   overflow: hidden;
-  border: 1px solid #ffffff2c;
+  border: 1px solid rgba(255,255,255,0.04);
   background:
-    radial-gradient(circle at 80% 15%, #50628d88, transparent 45%),
-    linear-gradient(180deg, #2f3f65 0%, #1d2d43 46%, #18161b 100%);
+    radial-gradient(circle at 80% 12%, rgba(80,140,220,0.08), transparent 35%),
+    linear-gradient(180deg, #0b1220 0%, #0e1b2d 40%, #081018 100%);
+}
+
+.arena .neon-skyline {
+  background-image: linear-gradient(90deg, rgba(255,120,200,0.06), rgba(100,180,255,0.06));
+  background-size: 1200px 60px;
+  mix-blend-mode: screen;
+  filter: blur(6px) saturate(1.1);
+}
+
+.confetti-canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 60;
+}
+
+.hud {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.topbar {
+  background: linear-gradient(90deg, rgba(30,120,255,0.06), rgba(255,90,160,0.04));
+  padding: 10px 18px;
+  border-radius: 12px;
+}
+
+.status {
+  font-family: Luckiest Guy, Orbitron, Inter, sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.8px;
+}
+.arena::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(180deg, rgba(255,255,255,0.02), transparent 10%), repeating-linear-gradient(transparent, transparent 6px, rgba(255,255,255,0.01) 7px);
+  pointer-events: none;
+}
+
+.arena .neon-skyline {
+  position: absolute;
+  left: 0;
+  bottom: 18px;
+  width: 100%;
+  height: 24%;
+  background: linear-gradient(90deg, rgba(12,24,40,0.0), rgba(4,8,16,0.6));
+  mix-blend-mode: screen;
+  opacity: 0.9;
+  pointer-events: none;
 }
 
 .ground {
@@ -179,11 +243,53 @@ button:hover {
 
 .fighter {
   position: absolute;
-  width: 70px;
-  height: 130px;
+  width: 84px;
+  height: 150px;
   transform: translateX(-50%);
   transition: left 0.04s linear, bottom 0.04s linear;
+  z-index: 4;
 }
+
+.fighter { overflow: visible; }
+
+.pee-stream {
+  position: absolute;
+  top: 92px;
+  left: 64px;
+  width: 220px;
+  height: 18px;
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgba(255,238,136,0.98) 0%, rgba(255,210,95,0.85) 40%, rgba(255,210,95,0.15) 100%);
+  box-shadow: 0 6px 20px rgba(255,200,60,0.12), 0 0 30px rgba(255,220,120,0.06) inset;
+  filter: blur(0.8px) saturate(1.1);
+  transform-origin: left center;
+  z-index: 2;
+  opacity: 0.98;
+  animation: peeFlow 0.22s linear infinite;
+}
+
+.pee-stream.left { left: auto; right: 64px; transform-origin: right center; transform: scaleX(-1); }
+
+@keyframes peeFlow {
+  0% { transform: translateX(0) scaleX(1); }
+  50% { transform: translateX(2px) scaleX(1.02); }
+  100% { transform: translateX(0) scaleX(1); }
+}
+
+/* small droplets (pseudo elements for extra detail) */
+.pee-stream::after,
+.pee-stream::before {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,230,150,0.95);
+  box-shadow: 0 6px 14px rgba(255,200,60,0.08);
+}
+.pee-stream::after { left: 40px; }
+.pee-stream::before { left: 72px; }
 
 .fighterName {
   position: absolute;
@@ -194,10 +300,151 @@ button:hover {
   white-space: nowrap;
 }
 
+.fighterName {
+  background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(100,160,255,0.04));
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-family: Luckiest Guy, Inter, sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: #fff;
+  text-shadow: 0 6px 18px rgba(0,0,0,0.5);
+}
+
 .sprite {
   position: absolute;
   inset: 0;
-  animation: bob 0.7s ease-in-out infinite alternate;
+  animation: bob 0.68s ease-in-out infinite alternate;
+  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.6));
+}
+
+/* Anime-style facial features */
+.hair {
+  position: absolute;
+  left: 8px;
+  top: -6px;
+  width: 68px;
+  height: 40px;
+  border-radius: 36px 36px 8px 8px;
+  transform-origin: center top;
+  z-index: 6;
+}
+
+.fighter.p1 .hair {
+  background: linear-gradient(180deg, #8fd1ff 0%, #2f7fff 60%);
+  box-shadow: 0 8px 26px rgba(47,127,255,0.14), 0 0 18px rgba(120,200,255,0.08) inset;
+}
+
+.fighter.p2 .hair {
+  background: linear-gradient(180deg, #ffd1d1 0%, #ef3e3e 60%);
+  box-shadow: 0 8px 26px rgba(239,62,62,0.12), 0 0 18px rgba(255,140,140,0.06) inset;
+}
+
+.hair-flare {
+  position: absolute;
+  left: 12px;
+  top: -2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.7);
+  filter: blur(4px);
+  opacity: 0.7;
+}
+
+.head {
+  position: absolute;
+  left: 26px;
+  top: 8px;
+  width: 32px;
+  height: 28px;
+  background: #ffd8b0;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,0.6);
+  z-index: 5;
+}
+
+.eye {
+  position: absolute;
+  top: 18px;
+  width: 12px;
+  height: 10px;
+  background: linear-gradient(180deg, #fff, #dfefff);
+  border-radius: 6px / 5px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.45) inset;
+  z-index: 7;
+}
+
+.eye-left { left: 30px; }
+.eye-right { left: 44px; }
+
+.eye::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 2px;
+  width: 4px;
+  height: 4px;
+  background: rgba(0,0,0,0.9);
+  border-radius: 50%;
+}
+
+.mouth {
+  position: absolute;
+  left: 38px;
+  top: 30px;
+  width: 8px;
+  height: 4px;
+  background: rgba(0,0,0,0.65);
+  border-radius: 4px;
+  transform: translateX(-50%);
+  z-index: 7;
+}
+
+.torso {
+  position: absolute;
+  left: 20px;
+  top: 38px;
+  width: 44px;
+  height: 50px;
+  border-radius: 10px;
+  border: 2px solid rgba(0,0,0,0.55);
+  z-index: 3;
+}
+
+.fighter.p1 .torso { background: linear-gradient(180deg,#6fb0ff,#2f7fff); }
+.fighter.p2 .torso { background: linear-gradient(180deg,#ffb0b0,#ef3e3e); }
+
+/* Anime outline and rim light */
+.fighter .torso, .fighter .head {
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6), 0 0 18px rgba(255,255,255,0.02) inset;
+  outline: 2px solid rgba(255,255,255,0.02);
+}
+
+/* Dramatic background sun */
+.arena::after {
+  content: '';
+  position: absolute;
+  right: 6%;
+  top: -10%;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle at 30% 30%, rgba(255,200,120,0.18), rgba(255,80,140,0.06) 25%, transparent 45%);
+  filter: blur(40px) saturate(1.1);
+  pointer-events: none;
+}
+
+/* Subtle parallax cloud shapes */
+.arena::before {
+  content: '';
+  position: absolute;
+  left: -10%;
+  top: 8%;
+  width: 140%;
+  height: 60%;
+  background-image: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.03), transparent 8%), radial-gradient(circle at 70% 30%, rgba(255,255,255,0.02), transparent 6%);
+  filter: blur(18px);
+  pointer-events: none;
 }
 
 .fighter.face-right .sprite {
@@ -212,11 +459,11 @@ button:hover {
   position: absolute;
   left: 22px;
   top: 6px;
-  width: 26px;
-  height: 24px;
+  width: 28px;
+  height: 26px;
   background: #ffd8b0;
   border-radius: 50%;
-  border: 2px solid #1a1a1a;
+  border: 2px solid rgba(0,0,0,0.6);
 }
 
 .torso {
@@ -232,19 +479,21 @@ button:hover {
 .fighter.p1 .torso,
 .fighter.p1 .arm,
 .fighter.p1 .leg {
-  background: #2f7fff;
+  background: linear-gradient(180deg, #6fb0ff, #2f7fff);
+  box-shadow: 0 6px 26px rgba(47,127,255,0.18), 0 0 18px rgba(47,127,255,0.08) inset;
 }
 
 .fighter.p2 .torso,
 .fighter.p2 .arm,
 .fighter.p2 .leg {
-  background: #ef3e3e;
+  background: linear-gradient(180deg, #ffb0b0, #ef3e3e);
+  box-shadow: 0 6px 26px rgba(239,62,62,0.16), 0 0 18px rgba(239,62,62,0.07) inset;
 }
 
 .arm,
 .leg {
   position: absolute;
-  border: 2px solid #1a1a1a;
+  border: 2px solid rgba(0,0,0,0.55);
   border-radius: 10px;
   transform-origin: top center;
   transition: transform 0.08s linear;
@@ -283,11 +532,11 @@ button:hover {
 }
 
 .fighter.leading-right.attack-punch .arm-leading {
-  transform: rotate(-78deg) translateY(-4px);
+  transform: rotate(-78deg) translateY(-6px) scale(1.02);
 }
 
 .fighter.leading-left.attack-punch .arm-leading {
-  transform: rotate(78deg) translateY(-4px);
+  transform: rotate(78deg) translateY(-6px) scale(1.02);
 }
 
 .fighter.leading-right.attack-kick .leg-leading {
@@ -307,7 +556,7 @@ button:hover {
 }
 
 .fighter.jumping .sprite {
-  filter: brightness(1.05);
+  filter: brightness(1.12) drop-shadow(0 14px 36px rgba(0,0,0,0.6));
 }
 
 .countdownOverlay {
@@ -319,20 +568,42 @@ button:hover {
   font-size: clamp(4rem, 15vw, 8rem);
   font-weight: 900;
   color: #fff6f0;
-  text-shadow: 0 12px 28px #00000080;
-  background: #070a123d;
+  text-shadow: 0 12px 48px rgba(0,0,0,0.8), 0 0 28px rgba(255,200,120,0.08);
+  background: linear-gradient(180deg, rgba(7,10,18,0.6), rgba(7,10,18,0.9));
+  backdrop-filter: blur(2px);
 }
 
 .result {
   position: absolute;
   inset: 0;
-  background: #05070ca8;
+  background: linear-gradient(180deg, rgba(2,4,8,0.6), rgba(2,4,8,0.8));
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  font-size: 1.5rem;
+  font-size: 1.6rem;
+  z-index: 12;
+}
+
+.result strong {
+  color: #fff8e8;
+  font-family: Luckiest Guy, Orbitron, sans-serif;
+  font-size: 2.4rem;
+  text-shadow: 0 18px 48px rgba(255,200,130,0.12), 0 6px 22px rgba(0,0,0,0.6);
+}
+
+.result::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 20px;
+  width: 360px;
+  height: 6px;
+  background: linear-gradient(90deg, rgba(255,120,90,0.9), rgba(255,220,130,0.9));
+  border-radius: 99px;
+  filter: blur(8px);
 }
 
 .result p {
@@ -345,6 +616,34 @@ button:hover {
   color: #ffb3b3;
   font-weight: 700;
 }
+
+.healthBoard .fill {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6), 0 0 22px rgba(255,255,255,0.02) inset;
+}
+
+.fill.p1 {
+  filter: drop-shadow(0 6px 26px rgba(47,127,255,0.16));
+}
+
+.fill.p2 {
+  filter: drop-shadow(0 6px 26px rgba(239,62,62,0.14));
+}
+
+.fighter.attack-punch .sprite {
+  transform: translateY(-6px) scale(1.02);
+}
+
+.fighter.attack-kick .sprite {
+  transform: translateY(-8px) scale(1.03);
+}
+
+@keyframes neonPulse {
+  0% { box-shadow: 0 0 6px rgba(255,255,255,0.02); }
+  50% { box-shadow: 0 0 28px rgba(48,180,255,0.06); }
+  100% { box-shadow: 0 0 6px rgba(255,255,255,0.02); }
+}
+
+.topbar { animation: neonPulse 3.6s ease-in-out infinite; }
 
 .info {
   color: #a9c8ff;
